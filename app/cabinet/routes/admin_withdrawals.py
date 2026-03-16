@@ -199,7 +199,7 @@ async def approve_withdrawal(
 
     # Notify user about approval
     try:
-        from app.bot import create_bot
+        from app.bot_factory import create_bot
 
         from app.config import settings
         from app.services.notification_delivery_service import notification_delivery_service
@@ -251,7 +251,7 @@ async def reject_withdrawal(
 
     # Notify user about rejection
     try:
-        from app.bot import create_bot
+        from app.bot_factory import create_bot
 
         from app.config import settings
         from app.services.notification_delivery_service import notification_delivery_service

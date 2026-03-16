@@ -178,7 +178,7 @@ async def apply_for_partner(
 
     # Уведомляем админов о новой заявке
     try:
-        from app.bot import create_bot
+        from app.bot_factory import create_bot
 
         from app.services.admin_notification_service import AdminNotificationService
 

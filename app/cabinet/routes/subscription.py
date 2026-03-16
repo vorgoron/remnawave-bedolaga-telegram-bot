@@ -815,7 +815,7 @@ async def purchase_traffic(
 
     # Отправляем уведомление админам
     try:
-        from app.bot import create_bot
+        from app.bot_factory import create_bot
 
         from app.services.admin_notification_service import AdminNotificationService
 
@@ -1043,7 +1043,7 @@ async def purchase_devices_legacy(
 
     # Отправляем уведомление админам
     try:
-        from app.bot import create_bot
+        from app.bot_factory import create_bot
 
         from app.services.admin_notification_service import AdminNotificationService
 
@@ -1344,7 +1344,7 @@ async def activate_trial(
 
     # Send admin notification about trial activation
     try:
-        from app.bot import create_bot
+        from app.bot_factory import create_bot
 
         from app.services.admin_notification_service import AdminNotificationService
 
@@ -1763,7 +1763,7 @@ async def submit_purchase(
 
         # Отправляем уведомление админам о покупке подписки
         try:
-            from app.bot import create_bot
+            from app.bot_factory import create_bot
 
             from app.services.admin_notification_service import AdminNotificationService
 
@@ -2156,7 +2156,7 @@ async def purchase_tariff(
 
         # Отправляем уведомление админам о покупке/продлении тарифа
         try:
-            from app.bot import create_bot
+            from app.bot_factory import create_bot
 
             from app.services.admin_notification_service import AdminNotificationService
 
@@ -2413,7 +2413,7 @@ async def purchase_devices(
 
         # Отправляем уведомление админам
         try:
-            from app.bot import create_bot
+            from app.bot_factory import create_bot
 
             from app.services.admin_notification_service import AdminNotificationService
 
@@ -4198,7 +4198,7 @@ async def switch_tariff(
 
     # Отправляем уведомление админам о смене тарифа
     try:
-        from app.bot import create_bot
+        from app.bot_factory import create_bot
 
         from app.services.admin_notification_service import AdminNotificationService
 

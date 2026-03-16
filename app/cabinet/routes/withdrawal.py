@@ -70,7 +70,7 @@ async def create_withdrawal(
 
     # Уведомляем админов о запросе на вывод
     try:
-        from app.bot import create_bot
+        from app.bot_factory import create_bot
 
         from app.services.admin_notification_service import AdminNotificationService
 

@@ -6,12 +6,11 @@ from datetime import datetime
 import structlog
 from aiogram.client.default import DefaultBotProperties
 from aiogram.enums import ParseMode
-from app.bot import create_bot
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from pydantic import BaseModel
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.config import settings
+from app.bot_factory import create_bot
 from app.database.models import PaymentMethod, User
 from app.services.payment_service import PaymentService
 from app.services.payment_verification_service import (

@@ -190,7 +190,7 @@ async def _process_campaign_bonus(
             try:
                 from aiogram.client.default import DefaultBotProperties
                 from aiogram.enums import ParseMode
-                from app.bot import create_bot
+                from app.bot_factory import create_bot
 
                 bot = create_bot(default=DefaultBotProperties(parse_mode=ParseMode.HTML))
                 await process_referral_registration(db, user.id, campaign.partner_user_id, bot=bot)
@@ -249,7 +249,7 @@ async def _process_referral_code(
         await db.flush()
         from aiogram.client.default import DefaultBotProperties
         from aiogram.enums import ParseMode
-        from app.bot import create_bot
+        from app.bot_factory import create_bot
 
         bot = create_bot(default=DefaultBotProperties(parse_mode=ParseMode.HTML))
         await process_referral_registration(db, user.id, referrer.id, bot=bot)
@@ -931,7 +931,7 @@ async def register_email_standalone(
         try:
             from aiogram.client.default import DefaultBotProperties
             from aiogram.enums import ParseMode
-            from app.bot import create_bot
+            from app.bot_factory import create_bot
 
             bot = create_bot(default=DefaultBotProperties(parse_mode=ParseMode.HTML))
             await process_referral_registration(db, user.id, referrer.id, bot=bot)

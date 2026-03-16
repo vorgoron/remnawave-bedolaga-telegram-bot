@@ -8,11 +8,11 @@ import httpx
 import structlog
 from aiogram.client.default import DefaultBotProperties
 from aiogram.enums import ParseMode
-from app.bot import create_bot
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy import desc, func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.bot_factory import create_bot
 from app.config import settings
 from app.database.crud.saved_payment_method import (
     deactivate_payment_method,

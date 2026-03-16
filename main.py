@@ -964,8 +964,7 @@ async def _send_crash_notification_on_error(error: Exception) -> None:
         return
 
     try:
-        from app.bot import create_bot
-
+        from app.bot_factory import create_bot
         from app.services.startup_notification_service import send_crash_notification
 
         bot = create_bot()

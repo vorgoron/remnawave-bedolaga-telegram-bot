@@ -2,10 +2,10 @@ from datetime import UTC, datetime
 
 import structlog
 from aiogram.client.default import DefaultBotProperties
-from app.bot import create_bot
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.bot_factory import create_bot
 from app.config import settings
 from app.database.crud.transaction import get_user_total_spent_kopeks
 from app.database.models import PromoGroup, User

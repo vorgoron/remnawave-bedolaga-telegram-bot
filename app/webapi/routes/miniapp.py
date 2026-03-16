@@ -10,13 +10,13 @@ from typing import Any
 from uuid import uuid4
 
 import structlog
-from app.bot import create_bot
 from fastapi import APIRouter, Depends, HTTPException, status
 from pydantic import ValidationError
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
+from app.bot_factory import create_bot
 from app.config import settings
 from app.database.crud.discount_offer import (
     get_latest_claimed_offer_for_user,

@@ -46,8 +46,7 @@ async def _send_admin_notification(
     if not getattr(settings, 'ADMIN_NOTIFICATIONS_ENABLED', False) or not settings.BOT_TOKEN:
         return
     try:
-        from app.bot import create_bot
-
+        from app.bot_factory import create_bot
         from app.services.admin_notification_service import AdminNotificationService
 
         async with create_bot() as bot:
@@ -529,7 +528,7 @@ async def _find_or_create_user(
     resolved_telegram_id: int | None = pre_resolved_telegram_id
     if resolved_telegram_id is None:
         try:
-            from app.bot import create_bot
+            from app.bot_factory import create_bot
 
             async with create_bot() as bot:
                 chat = await asyncio.wait_for(
@@ -642,7 +641,8 @@ async def _send_telegram_gift_notification(
         from aiogram.client.default import DefaultBotProperties
         from aiogram.enums import ParseMode
         from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
-        from app.bot import create_bot
+
+        from app.bot_factory import create_bot
 
         gift_from = ''
         if purchase.contact_value:
