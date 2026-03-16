@@ -82,6 +82,15 @@ patch_message_methods()
 logger = structlog.get_logger(__name__)
 
 
+def create_bot(**kwargs) -> Bot:
+    """Create a Bot instance with proxy configured from settings."""
+    from aiogram.client.session.aiohttp import AiohttpSession
+
+    if settings.BOT_PROXY_URL and 'session' not in kwargs:
+        kwargs['session'] = AiohttpSession(proxy=settings.BOT_PROXY_URL)
+    return Bot(token=settings.BOT_TOKEN, **kwargs)
+
+
 async def debug_callback_handler(callback: types.CallbackQuery):
     logger.info('🔍 DEBUG CALLBACK:')
     logger.info('Data', callback_data=callback.data)
@@ -97,9 +106,15 @@ async def setup_bot() -> tuple[Bot, Dispatcher]:
         logger.warning('Кеш не инициализирован', error=e)
 
     from aiogram.client.default import DefaultBotProperties
+    from aiogram.client.session.aiohttp import AiohttpSession
     from aiogram.enums import ParseMode
 
-    bot = Bot(token=settings.BOT_TOKEN, default=DefaultBotProperties(parse_mode=ParseMode.HTML))
+    session = AiohttpSession(proxy=settings.BOT_PROXY_URL) if settings.BOT_PROXY_URL else None
+    bot = Bot(
+        token=settings.BOT_TOKEN,
+        session=session,
+        default=DefaultBotProperties(parse_mode=ParseMode.HTML),
+    )
 
     maintenance_service.set_bot(bot)
     logger.info('Бот установлен в maintenance_service')

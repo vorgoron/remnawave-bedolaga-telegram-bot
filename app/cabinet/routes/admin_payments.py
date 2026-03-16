@@ -4,9 +4,9 @@ import math
 from datetime import datetime
 
 import structlog
-from aiogram import Bot
 from aiogram.client.default import DefaultBotProperties
 from aiogram.enums import ParseMode
+from app.bot import create_bot
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from pydantic import BaseModel
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -394,7 +394,7 @@ async def check_payment_status(
     old_is_paid = record.is_paid
 
     # Run manual check
-    bot = Bot(token=settings.BOT_TOKEN, default=DefaultBotProperties(parse_mode=ParseMode.HTML))
+    bot = create_bot(default=DefaultBotProperties(parse_mode=ParseMode.HTML))
     try:
         payment_service = PaymentService(bot=bot)
         updated = await run_manual_check(db, payment_method, payment_id, payment_service)

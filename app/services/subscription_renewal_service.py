@@ -10,6 +10,7 @@ from uuid import uuid4
 
 import structlog
 from aiogram import Bot
+from app.bot import create_bot
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.config import settings
@@ -337,7 +338,7 @@ async def with_admin_notification_service(
 
     bot: Bot | None = None
     try:
-        bot = Bot(token=settings.BOT_TOKEN)
+        bot = create_bot()
         service = AdminNotificationService(bot)
         await handler(service)
     except Exception as error:  # pragma: no cover - defensive logging

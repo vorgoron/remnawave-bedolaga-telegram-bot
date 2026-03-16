@@ -1,8 +1,8 @@
 from datetime import UTC, datetime
 
 import structlog
-from aiogram import Bot
 from aiogram.client.default import DefaultBotProperties
+from app.bot import create_bot
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -30,7 +30,7 @@ async def _notify_admins_about_auto_assignment(
         logger.debug('BOT_TOKEN не настроен — пропускаем уведомление о промогруппе')
         return
 
-    bot = Bot(token=bot_token, default=DefaultBotProperties(parse_mode='HTML'))
+    bot = create_bot(default=DefaultBotProperties(parse_mode='HTML'))
     try:
         notification_service = AdminNotificationService(bot)
         reason = (

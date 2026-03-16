@@ -10,7 +10,7 @@ from typing import Any
 from uuid import uuid4
 
 import structlog
-from aiogram import Bot
+from app.bot import create_bot
 from fastapi import APIRouter, Depends, HTTPException, status
 from pydantic import ValidationError
 from sqlalchemy import select
@@ -928,7 +928,7 @@ async def create_payment_link(
                 detail='Failed to prepare Stars payment',
             ) from exc
 
-        bot = Bot(token=settings.BOT_TOKEN)
+        bot = create_bot()
         invoice_payload = _build_balance_invoice_payload(user.id, amount_kopeks)
         try:
             payment_service = PaymentService(bot)
@@ -1399,7 +1399,7 @@ async def create_payment_link(
         if not settings.BOT_TOKEN:
             raise HTTPException(status.HTTP_500_INTERNAL_SERVER_ERROR, detail='Bot token is not configured')
 
-        bot = Bot(token=settings.BOT_TOKEN)
+        bot = create_bot()
         try:
             tribute_service = TributeService(bot)
             payment_url = await tribute_service.create_payment_link(

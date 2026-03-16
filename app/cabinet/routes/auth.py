@@ -188,11 +188,11 @@ async def _process_campaign_bonus(
             user.referred_by_id = campaign.partner_user_id
             await db.flush()
             try:
-                from aiogram import Bot
                 from aiogram.client.default import DefaultBotProperties
                 from aiogram.enums import ParseMode
+                from app.bot import create_bot
 
-                bot = Bot(token=settings.BOT_TOKEN, default=DefaultBotProperties(parse_mode=ParseMode.HTML))
+                bot = create_bot(default=DefaultBotProperties(parse_mode=ParseMode.HTML))
                 await process_referral_registration(db, user.id, campaign.partner_user_id, bot=bot)
                 logger.info(
                     'Referral set from campaign partner',
@@ -247,11 +247,11 @@ async def _process_referral_code(
             return
         user.referred_by_id = referrer.id
         await db.flush()
-        from aiogram import Bot
         from aiogram.client.default import DefaultBotProperties
         from aiogram.enums import ParseMode
+        from app.bot import create_bot
 
-        bot = Bot(token=settings.BOT_TOKEN, default=DefaultBotProperties(parse_mode=ParseMode.HTML))
+        bot = create_bot(default=DefaultBotProperties(parse_mode=ParseMode.HTML))
         await process_referral_registration(db, user.id, referrer.id, bot=bot)
         logger.info('Referral applied from code', user_id=user.id, referrer_id=referrer.id, referral_code=referral_code)
     except Exception as e:
@@ -929,11 +929,11 @@ async def register_email_standalone(
     # Обработать реферальную регистрацию (если есть реферер)
     if referrer:
         try:
-            from aiogram import Bot
             from aiogram.client.default import DefaultBotProperties
             from aiogram.enums import ParseMode
+            from app.bot import create_bot
 
-            bot = Bot(token=settings.BOT_TOKEN, default=DefaultBotProperties(parse_mode=ParseMode.HTML))
+            bot = create_bot(default=DefaultBotProperties(parse_mode=ParseMode.HTML))
             await process_referral_registration(db, user.id, referrer.id, bot=bot)
             logger.info(
                 'Processed referral registration: user_id=, referrer_id', user_id=user.id, referrer_id=referrer.id

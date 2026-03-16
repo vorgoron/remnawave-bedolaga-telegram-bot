@@ -29,6 +29,7 @@ logger = structlog.get_logger(__name__)
 class Settings(BaseSettings):
     BOT_TOKEN: str
     BOT_USERNAME: str | None = None
+    BOT_PROXY_URL: str | None = None  # e.g. http://user:pass@proxy:port or socks5://user:pass@proxy:port
     ADMIN_IDS: str = ''
     ADMIN_EMAILS: str = ''  # Comma-separated admin emails for email-only users
 
