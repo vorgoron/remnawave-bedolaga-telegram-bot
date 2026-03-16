@@ -100,7 +100,14 @@ async def setup_bot() -> tuple[Bot, Dispatcher]:
     from aiogram.client.session.aiohttp import AiohttpSession
     from aiogram.enums import ParseMode
 
-    session = AiohttpSession(proxy=settings.BOT_PROXY_URL) if settings.BOT_PROXY_URL else None
+    if settings.BOT_PROXY_URL and settings.BOT_PROXY_URL.startswith('https://'):
+        from app.utils.httpx_session import HttpxSession
+
+        session = HttpxSession(proxy=settings.BOT_PROXY_URL)
+    elif settings.BOT_PROXY_URL:
+        session = AiohttpSession(proxy=settings.BOT_PROXY_URL)
+    else:
+        session = None
     bot = Bot(
         token=settings.BOT_TOKEN,
         session=session,
