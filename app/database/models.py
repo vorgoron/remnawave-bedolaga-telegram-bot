@@ -159,6 +159,7 @@ class PaymentMethod(Enum):
     FREEKASSA = 'freekassa'
     KASSA_AI = 'kassa_ai'
     RIOPAY = 'riopay'
+    SEVERPAY = 'severpay'
     MANUAL = 'manual'
     BALANCE = 'balance'
 
@@ -756,7 +757,7 @@ class RioPayPayment(Base):
     __tablename__ = 'riopay_payments'
 
     id = Column(Integer, primary_key=True, index=True)
-    user_id = Column(Integer, ForeignKey('users.id'), nullable=False, index=True)
+    user_id = Column(Integer, ForeignKey('users.id', ondelete='SET NULL'), nullable=True, index=True)
 
     # Идентификаторы
     order_id = Column(String(64), unique=True, nullable=False, index=True)  # Наш internal ID
@@ -810,6 +811,69 @@ class RioPayPayment(Base):
 
     def __repr__(self) -> str:  # pragma: no cover - debug helper
         return f'<RioPayPayment(id={self.id}, order_id={self.order_id}, amount={self.amount_rubles}₽, status={self.status})>'
+
+
+class SeverPayPayment(Base):
+    """Платежи через SeverPay (severpay.io)."""
+
+    __tablename__ = 'severpay_payments'
+
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey('users.id', ondelete='SET NULL'), nullable=True, index=True)
+
+    # Идентификаторы
+    order_id = Column(String(64), unique=True, nullable=False, index=True)  # Наш internal ID
+    severpay_id = Column(String(64), unique=True, nullable=True, index=True)  # ID от SeverPay
+    severpay_uid = Column(String(64), unique=True, nullable=True, index=True)  # UID от SeverPay
+
+    # Суммы
+    amount_kopeks = Column(Integer, nullable=False)
+    currency = Column(String(10), nullable=False, default='RUB')
+    description = Column(Text, nullable=True)
+
+    # Статусы
+    status = Column(String(32), nullable=False, default='pending')
+    is_paid = Column(Boolean, default=False)
+
+    # Данные платежа
+    payment_url = Column(Text, nullable=True)
+    payment_method = Column(String(32), nullable=True)
+
+    # Метаданные
+    metadata_json = Column(JSON, nullable=True)
+    callback_payload = Column(JSON, nullable=True)
+
+    # Временные метки
+    paid_at = Column(AwareDateTime(), nullable=True)
+    expires_at = Column(AwareDateTime(), nullable=True)
+    created_at = Column(AwareDateTime(), default=func.now())
+    updated_at = Column(AwareDateTime(), default=func.now(), onupdate=func.now())
+
+    # Связь с транзакцией
+    transaction_id = Column(Integer, ForeignKey('transactions.id'), nullable=True)
+
+    # Relationships
+    user = relationship('User', backref='severpay_payments')
+    transaction = relationship('Transaction', backref='severpay_payment')
+
+    @property
+    def amount_rubles(self) -> float:
+        return self.amount_kopeks / 100
+
+    @property
+    def is_pending(self) -> bool:
+        return self.status == 'pending'
+
+    @property
+    def is_success(self) -> bool:
+        return self.status == 'success' and self.is_paid
+
+    @property
+    def is_failed(self) -> bool:
+        return self.status in ['failed', 'expired', 'declined', 'amount_mismatch']
+
+    def __repr__(self) -> str:  # pragma: no cover - debug helper
+        return f'<SeverPayPayment(id={self.id}, order_id={self.order_id}, amount={self.amount_rubles}₽, status={self.status})>'
 
 
 class PromoGroup(Base):
@@ -1510,6 +1574,7 @@ class Transaction(Base):
         Index('ix_transactions_type_created_completed', 'type', 'created_at', 'is_completed'),
         Index('ix_transactions_user_created', 'user_id', 'created_at'),
         Index('ix_transactions_type_method_created', 'type', 'payment_method', 'created_at'),
+        Index('ix_transactions_user_type_completed_amount', 'user_id', 'type', 'is_completed', 'amount_kopeks'),
     )
 
     id = Column(Integer, primary_key=True, index=True)
@@ -2426,7 +2491,10 @@ class AdvertisingCampaign(Base):
 
 class AdvertisingCampaignRegistration(Base):
     __tablename__ = 'advertising_campaign_registrations'
-    __table_args__ = (UniqueConstraint('campaign_id', 'user_id', name='uq_campaign_user'),)
+    __table_args__ = (
+        UniqueConstraint('campaign_id', 'user_id', name='uq_campaign_user'),
+        Index('ix_campaign_reg_user_created', 'user_id', 'created_at'),
+    )
 
     id = Column(Integer, primary_key=True, index=True)
     campaign_id = Column(Integer, ForeignKey('advertising_campaigns.id', ondelete='CASCADE'), nullable=False)
@@ -3219,6 +3287,7 @@ class GuestPurchase(Base):
     cabinet_password = Column(Text, nullable=True)
     auto_login_token = Column(Text, nullable=True)
     recipient_warning = Column(String(50), nullable=True)
+    retry_count = Column(Integer, nullable=False, default=0, server_default='0')
 
     landing = relationship('LandingPage', back_populates='guest_purchases', lazy='selectin')
     tariff = relationship('Tariff', lazy='selectin')

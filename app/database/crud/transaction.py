@@ -25,6 +25,8 @@ REAL_PAYMENT_METHODS = [
     PaymentMethod.CLOUDPAYMENTS.value,
     PaymentMethod.FREEKASSA.value,
     PaymentMethod.KASSA_AI.value,
+    PaymentMethod.RIOPAY.value,
+    PaymentMethod.SEVERPAY.value,
 ]
 
 
@@ -106,7 +108,7 @@ async def create_transaction(
 
             await maybe_assign_promo_group_by_total_spent(db, user_id)
         except Exception as exc:
-            logger.debug('Не удалось проверить автовыдачу промогруппы для пользователя', user_id=user_id, exc=exc)
+            logger.warning('Не удалось проверить автовыдачу промогруппы для пользователя', user_id=user_id, exc=exc)
         if type == TransactionType.SUBSCRIPTION_PAYMENT and is_completed:
             try:
                 from app.services.referral_contest_service import referral_contest_service
@@ -166,7 +168,7 @@ async def emit_transaction_side_effects(
 
         await maybe_assign_promo_group_by_total_spent(db, user_id)
     except Exception as exc:
-        logger.debug('Не удалось проверить автовыдачу промогруппы для пользователя', user_id=user_id, exc=exc)
+        logger.warning('Не удалось проверить автовыдачу промогруппы для пользователя', user_id=user_id, exc=exc)
 
     if type == TransactionType.SUBSCRIPTION_PAYMENT and is_completed:
         try:
@@ -251,7 +253,7 @@ async def complete_transaction(db: AsyncSession, transaction: Transaction) -> Tr
 
         await maybe_assign_promo_group_by_total_spent(db, transaction.user_id)
     except Exception as exc:
-        logger.debug(
+        logger.warning(
             'Не удалось проверить автовыдачу промогруппы для пользователя', user_id=transaction.user_id, exc=exc
         )
 
